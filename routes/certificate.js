@@ -5,8 +5,8 @@ let debug = require('debug')('ca-forge:routes:auth');
 let path = __dirname;
 let certPath = path.replace('routes', 'certs' );
 let keyPath = path.replace('routes', 'keys');
-const caCertPem = fs.readFileSync(certPath + "/ca.pem", 'utf8');
-const caKeyPem = fs.readFileSync(keyPath +  "/ca.pem", 'utf8');
+const caCertPem = fs.readFileSync(certPath + "/cert.pem", 'utf8');
+const caKeyPem = fs.readFileSync(keyPath +  "/privkey.pem", 'utf8');
 const caCert = forge.pki.certificateFromPem(caCertPem);
 const caKey = forge.pki.privateKeyFromPem(caKeyPem);
 
@@ -45,8 +45,7 @@ module.exports = (router) => {
 
         let attrs = req.body.attrs;
         let address = req.body.address;
-        let publicKey = req.body.publicKey;
-        publicKey = forge.pki.publicKeyFromPem(publicKey);
+        let publicKey = forge.pki.publicKeyFromPem(req.body.publicKey);
         let cert = forge.pki.createCertificate();
         cert.serialNumber = '02';
         cert.validity.notBefore = new Date();
