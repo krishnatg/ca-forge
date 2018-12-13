@@ -1,5 +1,6 @@
 const forge = require('node-forge');
 const fs = require('fs');
+const secrets = require('secrets.js');
 let debug = require('debug')('ca-forge:routes:auth');
 
 let path = __dirname;
@@ -9,7 +10,15 @@ const caCertPem = fs.readFileSync(certPath + "/cert.pem", 'utf8');
 const caKeyPem = fs.readFileSync(keyPath +  "/privkey.pem", 'utf8');
 const caCert = forge.pki.certificateFromPem(caCertPem);
 const caKey = forge.pki.privateKeyFromPem(caKeyPem);
-
+// const caKey = secrets.str2hex(JSON.stringify(forge.pki.privateKeyFromPem(caKeyPem)));
+/*
+const secretsArr = [];
+const caKeyPart1 = secretsArr.push(fs.readFileSync(keyPath + "/privkey_part1.pem", { encoding: 'utf8' }));
+const caKeyPart2 = secretsArr.push(fs.readFileSync(keyPath + "/privkey_part2.pem", { encoding: 'utf8' }));
+const caKeyPart3 = secretsArr.push(fs.readFileSync(keyPath + "/privkey_part3.pem", { encoding: 'utf8' }));
+const caKeyPart4 = secretsArr.push(fs.readFileSync(keyPath + "/privkey_part4.pem", { encoding: 'utf8' }));
+const caKeyPart5 = secretsArr.push(fs.readFileSync(keyPath + "/privkey_part5.pem", { encoding: 'utf8' }));
+*/
 
 module.exports = (router) => {
     /**
@@ -42,6 +51,35 @@ module.exports = (router) => {
      */
     let getCertificate = (req, res, next)=>{
         debug('request body', req.body);
+        /* Krishna - Shamir's secret sharing */
+
+        const secretsArr = [];
+
+        //TODO: check if files exist before reading from them
+        fs.access(file, fs.constants.R_OK, (err) => {
+            console.log(`${file} ${err ? 'is not readable' : 'is readable'}`);
+        });
+
+        const caKeyPart1 = secretsArr.push(fs.readFileSync(keyPath + "/privkey_part1.pem", { encoding: 'utf8' }));
+        const caKeyPart2 = secretsArr.push(fs.readFileSync(keyPath + "/privkey_part2.pem", { encoding: 'utf8' }));
+        const caKeyPart3 = secretsArr.push(fs.readFileSync(keyPath + "/privkey_part3.pem", { encoding: 'utf8' }));
+        const caKeyPart4 = secretsArr.push(fs.readFileSync(keyPath + "/privkey_part4.pem", { encoding: 'utf8' }));
+        const caKeyPart5 = secretsArr.push(fs.readFileSync(keyPath + "/privkey_part5.pem", { encoding: 'utf8' }));
+
+        var i;
+        /*
+        for (i = 0 ; i < secretsArr.length ; i++) {
+            console.log("START");
+            console.log(secretsArr[i]);
+            console.log("END");
+        }
+        */
+        // var comb = secrets.hex2str(secrets.combine(secretsArr));
+        var comb = secrets.combine(secretsArr);
+        // console.log(comb);
+        console.log(comb === secrets.str2hex(JSON.stringify(caKey)));
+        // console.log("CHECK ABOVE RESULT!!");
+        /* End */
 
         let attrs = req.body.attrs;
         let address = req.body.address;
