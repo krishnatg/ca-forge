@@ -58,3 +58,8 @@ curl -X POST \
 	"publicKey": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAud5CiuqbAO3wHieiUYp9\nQ+PcaQfLXZa5Vq3RLj1o1zFhh18z4nHtUvq/LSNIjSNcZZOYYJDHGp2t5t/pT5rr\nbxDryl4iNGsIOGQhxICncq+6NfRedOR7+S4DE4PR8uz8l1gtOmhgX4prxCLQnZcs\ngHZptNox/8aS6RSuhuUszQpj+8d/qR9vRAGzLKAM1otrhHZPOTuOV2+mDaR7llns\n/IcUDSo/E9gYI8ecs2Y4mh0alPlw4wRMjLAbPHoDumfReRFrY8IvAq55mmsf3s8m\nZfODrkIHpkqjyd4EDQblupPF1oebVlF6WJcmLBNDNoEEWUAjbu0i6sCJ1LDGWrfS\nnwIDAQAB\n-----END PUBLIC KEY-----"
 }'
 ```
+
+EDIT
+-----
+
+Shamir's secret sharing algorithm is integrated into the project. Now, as soon as the node server is started, the stored private key is split into 10 encrypted "secrets" and stored as ```privkey_part*.pem``` which are then used to recreate the key before signing the certificate. There is a minimum requirement of 5 secrets to be present for this successful recovery of the private key. If this is not met, certificate signing fails.
