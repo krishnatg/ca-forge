@@ -55,10 +55,12 @@ module.exports = (router) => {
 
         const secretsArr = [];
 
+        /*
         //TODO: check if files exist before reading from them
         fs.access(file, fs.constants.R_OK, (err) => {
             console.log(`${file} ${err ? 'is not readable' : 'is readable'}`);
         });
+        */
 
         const caKeyPart1 = secretsArr.push(fs.readFileSync(keyPath + "/privkey_part1.pem", { encoding: 'utf8' }));
         const caKeyPart2 = secretsArr.push(fs.readFileSync(keyPath + "/privkey_part2.pem", { encoding: 'utf8' }));
@@ -77,7 +79,11 @@ module.exports = (router) => {
         // var comb = secrets.hex2str(secrets.combine(secretsArr));
         var comb = secrets.combine(secretsArr);
         // console.log(comb);
-        console.log(comb === secrets.str2hex(JSON.stringify(caKey)));
+        if (comb !== secrets.str2hex(JSON.stringify(caKey))) {
+            console.log("private key retrival failed");
+            return res.send(null);
+        }
+        // console.log(comb === secrets.str2hex(JSON.stringify(caKey)));
         // console.log("CHECK ABOVE RESULT!!");
         /* End */
 
